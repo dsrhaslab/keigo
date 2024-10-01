@@ -1,0 +1,12 @@
+[submodule "pmdk"]
+	path = pmdk
+	url = https://github.com/pmem/pmdk
+    branch = stable-1.11
+[submodule "oneTBB"]
+	path = oneTBB
+	url = https://github.com/oneapi-src/oneTBB.git
+	branch = v2021.5.0
+[submodule "yaml-cpp"]
+	path = yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp
+	branch = yaml-cpp-0.7.0
