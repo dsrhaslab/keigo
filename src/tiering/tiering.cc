@@ -79,7 +79,6 @@ void printFileDeviceMap() {
 
 // write file device map to a file
 void dumpFileDeviceMapToFile(std::string filename) {
-  // std::cout << "Dumping file device map to file: " << filename << std::endl;
   std::ofstream myfile;
   myfile.open(filename,std::ofstream::trunc);
   for( IntDeviceTable::iterator i=file_device_map.begin(); i!=file_device_map.end(); ++i ) {
@@ -237,7 +236,6 @@ std::string fileActualPath(std::string fname, std::shared_ptr<Device>& device, i
 
       return actualPathByDevice(fname, name_, device_);
     } else {
-      // std::cout << "file not redirected yet, fname: " << sst_number << std::endl;
       op_type ttype = getThreadType(pthread_self());
       if (ttype == THREAD_FLUSH) {
         int new_level = 0;
@@ -245,9 +243,7 @@ std::string fileActualPath(std::string fname, std::shared_ptr<Device>& device, i
         level = new_level;
 
         device = getDeviceFromLevel(level);
-        // std::cout << "fname1: " << fname << " | level: " << level << " | device: " << device->name << std::endl;
         
-
         actualPath = actualPathByDevice(fname, name_, device);
         linkFileToDevice(sst_number, device);
         return actualPath;
@@ -259,12 +255,9 @@ std::string fileActualPath(std::string fname, std::shared_ptr<Device>& device, i
         level = new_level;
 
         device = getDeviceFromLevel(level);
-        // std::cout << "fname2: " << fname << " | level: " << level << " | device: " << device->name << std::endl;
 
 
         actualPath = actualPathByDevice(fname, name_, device);
-
-        // std::cout << "Compaction - " << actualPath << std::endl;
 
         linkFileToDevice(sst_number, device);
 
@@ -272,15 +265,12 @@ std::string fileActualPath(std::string fname, std::shared_ptr<Device>& device, i
       } else {  // not flush or compaction, but sst and not in map. Should
                 // never happen..
         //print thread id
-        // std::cout << "thread id: " << pthread_self() << std::endl;
         level = 0;
 
 
         device = getDeviceFromLevel(0);
-        // std::cout << "fname3: " << fname << " | level: " << level << " | device: " << device->name << std::endl;
 
         actualPath = actualPathByDevice(fname, name_, device);
-        // std::cout << "fname: " << fname << "| actualPath: " << actualPath << std::endl;
         linkFileToDevice(sst_number, device);
         return actualPath;
       }
@@ -439,17 +429,6 @@ void read_config_file() {
     name_to_device_map[tiers_temp[j].name] = tiers[j];
   }
 
-    // caches.push_back(std::make_shared<DeviceCache>(tiers[0], tiers[1], 0));
-    // tiers[1]->cache = std::make_shared<DeviceCache>(tiers[0], tiers[1]);
-
-  // if (activate_cache) {
-  //   for (int j = 1; j < tiers.size(); j++) {
-  //     tiers[j]->cache = std::make_shared<DeviceCache>(tiers[j-1], tiers[j]);
-  //     caches.push_back(tiers[j]->cache);
-  //   }
-  // }
-  
-
 
   for (int j = 0; j < tiers.size(); j++) {
     for (int level : tiers_temp[j].policy.levels) {
@@ -463,21 +442,6 @@ void read_config_file() {
       tiers[j]->lru = std::make_shared<LRU>(tiers[j]->disk_size, tiers[j]->policy.threshold);
     }
   }
-
-// capacity_devices.push_back(tiers[1]);
-// tiers[1]->lru = std::make_shared<LRU>();
-
-
-  // capacity_devices[0]->total_size = 200000;
-  // capacity_devices[1]->total_size = 12884901888;
-
-  // capacity_devices[0]->lru = std::make_shared<LRU>();
-
-
-  // capacity_devices[0]->lru->thisCapacity = capacity_devices[0];
-  // capacity_devices[0]->lru->nextCapacity = capacity_devices[1];
-  // capacity_devices[0]->lru_working = true;
-
 
 
   for (int i = 0; i < capacity_devices.size(); i++) {
@@ -493,7 +457,6 @@ void read_config_file() {
 
   std::cout << "level_to_device_map: " << std::endl;
 
-  //print level_to_device_map (level -> device) (for the device simpl print the env)
   for (auto const& x : level_to_device_map) {
     std::cout << "last-level: " << x.first << " " << x.second->env << std::endl;
   }
@@ -518,7 +481,6 @@ void dumpRedirectionMap() {
 
 
 void dump_second_config()  {
-  // std::cout << "Dumping file device map to file: " << filename << std::endl;
   std::ofstream myfile;
   myfile.open("/home/gsd/ruben/kvs-nvme/kvstore/configs.txt",std::ofstream::trunc);
 
@@ -526,9 +488,7 @@ void dump_second_config()  {
   for (auto const& x : level_to_device_map) {
     myfile << "level: " << x.first << " | device: " << x.second->name << std::endl;
   }
-  //write "---"
   myfile << "---" << std::endl;
-  //write current_capacity_device_index
   myfile << "current_capacity_device_index: " << current_capacity_device_index << std::endl;
 
 

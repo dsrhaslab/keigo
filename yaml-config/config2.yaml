@@ -4,7 +4,7 @@ tier1:
   engine: pmdk
   policy: 
     type: performance
-    levels: [0,1,2,3]
+    levels: [0,1,2]
   cache_size: 75161927680
   disk_size: 32212254720
 
@@ -13,8 +13,8 @@ tier2:
   engine: posix
   policy: 
     type: capacity
-    threshold: 21474836480
-  cache_size: 21474836480
+    threshold: 2147483648
+  cache_size: 107374182400
   disk_size: 858993459200
 
 # tier1:

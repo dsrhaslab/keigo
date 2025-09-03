@@ -180,6 +180,7 @@ class WritableWalFileEnv : public PmemFileEnv {
         void *p_length = mmap(0, sizeof(size_t), PROT_WRITE, MMAP_FLAGS, fd, 0);
         if (p_length == MAP_FAILED) {
             close(fd);
+            std::cout << "mmap first size_t failed: " << strerror(errno) << std::endl;
             throw std::runtime_error(
                 std::string("mmap first size_t failed: ").append(strerror(errno)));
         }

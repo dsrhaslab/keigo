@@ -38,8 +38,8 @@ function build-pmdk_ {
   make -j $(nproc)
 }
 
-function build-myposix {
-  echo "=== build-myposix ==="
+function build-keigo {
+  echo "=== build-keigo ==="
   cd ${PROJECT_SOURCE_DIR}/build
   cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_PROFILER_3000=ON ..
   # cmake -DCMAKE_BUILD_TYPE=Release -DUSE_PROFILER_3000=ON ..
@@ -70,7 +70,7 @@ function build {
     build-yaml && touch "${BUILT_YAML}"
   fi 
 
-  build-myposix
+  build-keigo
 
 }
 

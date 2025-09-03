@@ -29,8 +29,6 @@ class SSTWriteFileEnv : public FileEnv {
         std::string sst_number_str = fname.substr(fname.find_last_of("/") + 1);
         sst_number_str = sst_number_str.substr(0, sst_number_str.find_last_of("."));
         sst_number = std::stoi(sst_number_str);
-
-        // std::cout << "SSTWriteFileEnv: " << fname << std::endl;
     }
 
     ~SSTWriteFileEnv() {
@@ -60,21 +58,11 @@ class SSTWriteFileEnv : public FileEnv {
         pmemaddr_ = (uint8_t *)pmem_map_file(fname_.c_str(), file_offset_ + map_size_,
                                              PMEM_FILE_CREATE, 0644, &mapped_len_, &is_pmem);
 
-        // if(remap) {
-        //     std::cout << "------------------------------" << std::endl;
-        //     std::cout << "MapNewRegion: fname_:" << fname_ << std::endl;
-        //     std::cout << "MapNewRegion: file_offset_: " << file_offset_ << std::endl;
-        //     std::cout << "MapNewRegion: map_size_: " << map_size_ << std::endl;
-        //     std::cout << "MapNewRegion: mapped_len_: " << mapped_len_ << std::endl;
-        // }
-
 
         if (pmemaddr_ == nullptr) {
             std::cout << "pmem_map_file error " << fname_ << std::endl;
             std::cout << "error: " << std::strerror(errno) << 
             " while remap is " << remap << '\n';
-            // std::cout << "disk space: " << std::endl;
-            // system("df -h /dev/pmem0");
             std::cout << "pmem_error4: " << pmem_errormsg() << std::endl;
             return -1;
         }
@@ -94,16 +82,12 @@ class SSTWriteFileEnv : public FileEnv {
 
         writer_threads_num++;
 
-        // std::cout << "opening sst write file: " << fname_ << std::endl;
-
         MapNewRegion(false);
         return fd;
     }
 
     int _open(const char *pathname, int flags, mode_t mode) override {
-        // std::cout << "opening sst write file2: " << fname_ << std::endl;
         writer_threads_num++;
-
 
         MapNewRegion(false);
         return fd;
@@ -113,10 +97,7 @@ class SSTWriteFileEnv : public FileEnv {
 
         writer_threads_num--;
 
-
-        // std::cout open-pmem2:<< "closing sst write file: " << fname_ << std::endl;
         std::cout << "closing file: " << fname_ << " with fd " << fd << std::endl;
-
 
         #ifdef PROFILER_3000
         std::shared_ptr<Device> device = getDevice(sst_number);
@@ -136,9 +117,6 @@ class SSTWriteFileEnv : public FileEnv {
             std::cout << "removed sst file: " << filename << std::endl;
 
         }
-
-
-        // add_sstwrite_close_counter();
 
         const size_t unused = mapped_len_ - file_offset_;
         pmem_unmap(pmemaddr_, mapped_len_);
@@ -170,10 +148,8 @@ class SSTWriteFileEnv : public FileEnv {
     }
 
     ssize_t _pread(int fd, void *buf, size_t count, off_t offset) override {
-        // std::cout << "pmem-pread: start: " << offset << " " << count << std::endl;
         const auto len = std::min(mapped_len_ - offset, count);
         std::memcpy(buf, pmemaddr_ + offset, len);
-        // std::cout << "pmem-pread: end: " << offset << " " << count << std::endl;
         return len;
     }
 
@@ -206,79 +182,64 @@ class SSTWriteFileEnv : public FileEnv {
     }
 
     int _fdatasync(int fd) override {
-        // add_sstwrite_sync_counter();
 
         pmem_drain();
         return 0;
     }
 
     ssize_t _readahead(int fd_, off64_t offset, size_t count) {
-        // std::cout << "readahead" << std::endl;
         return 0;
     }
     
     int _fcntl(int fd_, int cmd, ... /* arg */ ) {
-        // std::cout << "fcntl" << std::endl;
         return 0;
     }
     
     int _posix_fadvise(int fd_, off_t offset, off_t len, int advice) {
-        // std::cout << "posix_fadvise" << std::endl;
         return 0;
     }
 
     ssize_t _pwrite(int fd_, const void *buf, size_t count, off_t offset) {
-        // std::cout << "pwrite" << std::endl;
         return 0;
     }
 
     int _ftruncate(int fd_, off_t length) {
-        // std::cout << "ftruncate" << std::endl;
         return 0;
     }
 
     int _fallocate(int fd_, int mode, off_t offset, off_t len) {
-        // std::cout << "fallocate" << std::endl;
         return 0;
     }
 
     int _sync_file_range(int fd_, off64_t offset, off64_t nbytes, unsigned int flags) {
-        // std::cout << "sync_file_range for: " << fname_ << std::endl;
         return 0;
     }
 
     int _fstat(int fd_, struct stat *buf) {
-        // std::cout << "fstat" << std::endl;
         return 0;
     }
 
     FILE *_fdopen(int fildes, const char *mode) {
-        // std::cout << "fdopen" << std::endl;
         return nullptr;
     }
 
     size_t _fread_unlocked(void *ptr, size_t size, size_t n, FILE *stream) {
-        // std::cout << "fread_unlocked" << std::endl;
         return 0;
     }
 
     int _fseek(FILE *stream, long offset, int whence) {
-        // std::cout << "fseek" << std::endl;
         return 0;
     }
 
     int _fclose(FILE *stream) {
-        // std::cout << "fclose" << std::endl;
         return 0;
     }
 
     void _clearerr(FILE *stream) {
-        // std::cout << "clearerr" << std::endl;
         
     }
 
     int _feof(FILE *stream) {
-        // std::cout << "feof" << std::endl;
         return 1;
     }
 

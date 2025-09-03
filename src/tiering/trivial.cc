@@ -108,20 +108,15 @@ class FileCopyManagerPosix : public FileCopyManager {
         //print error
         std::cout << "errno: " << errno << std::endl;
 
-        //kill the process
-        // abort();
-
 
         return std::make_pair(false,std::vector<void*>());
       } else {
-          // std::cout << "getting stat for srcfile " << srcfile << std::endl;
         if (fstat(fd, &stat) < 0) {
             close(fd);
             throw std::runtime_error(std::string("fstat failed"));
         }
       }
       std::vector<void*> args = {(void*)stat.st_size};
-      // std::pair<bool, std::vector<void*>> p = 
       return std::make_pair(true,args);
     }
 
@@ -210,21 +205,10 @@ class FileCopyManagerPmdk : public FileCopyManager {
     void copyFrom(FileCopyManager* to) {
       int at_each_write = BUF_LEN;
 
-      // std::cout << "copyFrom - copying file: " << file << std::endl;
-      // //if file contains the string 146 somewhere print yes!
-      // std::regex e(".*146.*");
-      // if (std::regex_match(file, e)) {
-      //   std::cout << "copyFrom - file contains 146" << std::endl;
-      // }
-    
-      // int x = 0;
       for (size_t i = 0; i < mapped_len_; i += at_each_write) {
         size_t to_write = std::min((size_t)at_each_write, mapped_len_ - i);
-        // int x = write(destfd, pmemaddr_ + i, to_write);
         to->copyTo(pmemaddr_ + i, to_write);
-        // x++;
       }
-      // std::cout << "copyFrom - copied file: " << file << " in " << x << " iterations" << std::endl;
       pmem_unmap(pmemaddr_, mapped_len_);
 
     }
@@ -271,9 +255,6 @@ bool inter_device_copy(copy_info cp_info) {
     return false;
   }
   from->copyFrom(to);
-
-
-  // std::cout << "ended copy of file: " << cp_info.filename << std::endl;
 
   //close both
   from->_close();

@@ -4,7 +4,7 @@ tier1:
   engine: pmdk
   policy: 
     type: performance
-    levels: [0,1,2,3]
+    levels: [0,1,2,3,4,5]
   cache_size: 75161927680
   disk_size: 32212254720
 
@@ -17,27 +17,26 @@ tier2:
   cache_size: 21474836480
   disk_size: 858993459200
 
-# tier1:
-#   wal: true
-#   path: /home/gsd/ruben/kvs-sata/kvstore
+# tier2:
+#   path: /home/gsd/ruben/kvs-nvme/kvstore
 #   engine: posix
 #   policy: 
-#     type: performance
-#     levels: [0,1,2,3,4,5,6]
+#     type: capacity
+#     threshold: 2147483648
 #   cache_size: 107374182400
-#   disk_size: 858993459200
+#   disk_size: 644245094400
 
-# tier1:
-#   wal: true
+
+# tier2:
 #   path: /home/gsd/ruben/kvs-nvme/kvstore
 #   engine: posix
 #   policy: 
 #     type: capacity
 #     threshold: 0
-#   cache_size: 0
-#   disk_size: 423576231596
+#   cache_size: 52613349376
+#   disk_size: 161061273600
 
-# tier2:
+# tier3:
 #   path: /home/gsd/ruben/kvs-sata/kvstore
 #   engine: posix
 #   policy: 
@@ -47,9 +46,8 @@ tier2:
 #   disk_size: 858993459200
 
 
-
 configs:
   redirection_map_file: "/home/gsd/ruben/kvs-nvme/kvstore/redirection_map.txt"
   file_extension: ".sst"
-  profiler_log: "/home/gsd/ruben/kvs-nvme/log_profiler_3000.txt.exec.txt"
-  activate_cache: "true"
+  profiler_log: "/home/gsd/ruben/kvs-nvme/log_profiler_3000.txt"
+  activate_cache: "false"

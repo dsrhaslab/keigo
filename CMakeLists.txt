@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O0")
 
 
 
-add_library(myposix SHARED include/myposix.h src/myposix.cc 
+add_library(keigo SHARED include/keigo.h src/keigo.cc 
 src/file_envs/file_env.h
 src/file_envs/posix_file_env.h
 src/file_envs/sst_write_file_env.h
@@ -36,7 +36,7 @@ if (USE_PROFILER_3000)
   add_definitions(-DPROFILER_3000)
 endif()
 
-# target_compile_definitions(myposix PRIVATE PROFILER_3000)
+# target_compile_definitions(keigo PRIVATE PROFILER_3000)
 
 include_directories("${CMAKE_SOURCE_DIR}/yaml-cpp/include/")
 
@@ -54,9 +54,9 @@ find_package(TBB CONFIG REQUIRED)
 list(APPEND THIRDPARTY_LIBS TBB::tbb) # Add TBB::tbbmalloc to this list to use tbb::fixed_pool
 
 
-target_link_libraries(myposix PRIVATE ${THIRDPARTY_LIBS})
+target_link_libraries(keigo PRIVATE ${THIRDPARTY_LIBS})
 
-set_target_properties(myposix PROPERTIES PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/include/myposix.h)
+set_target_properties(keigo PROPERTIES PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/include/keigo.h)
     
 include(GNUInstallDirs)
 
@@ -72,7 +72,7 @@ include(GNUInstallDirs)
 #     install(FILES ${CMAKE_SOURCE_DIR}/src/spinlock.h
 #     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-install(TARGETS myposix
+install(TARGETS keigo
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 

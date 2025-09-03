@@ -83,7 +83,6 @@ void Linkedlist_c::insertNode_c(int data, int size) {
 
 // Function to insert a new node.
 void Linkedlist_c::insertNode_c(Node_c* newNode) {
-    // std::cout << "inserting node " << "sst number: " << newNode->sst_number << std::endl;
     this->node_length++;
     // Assign to head
     if (head == NULL) {
@@ -124,14 +123,6 @@ void Linkedlist_c::printList_c() {
  
 //node and number of times accessed (counter)
 std::pair<Node_c*,int> Linkedlist_c::select_most_used() {
-
-    // std::unique_lock<std::shared_timed_mutex> lock1(
-    //     non_cached_files_access_counter_mutex_c);
-    // std::unique_lock<std::shared_timed_mutex> lock2(
-    //     cached_files_access_counter_mutex_c);
-
-
-    // std::cout << this->node_length << std::endl;
 
     //if the list is empty, return NULL
     if (this->node_length == 0) {

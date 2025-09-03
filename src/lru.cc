@@ -35,14 +35,12 @@ LRU::LRU(long total_size_, long threshold_) {
 }
 
 void* LRU::lruThreadWork() {
-    // std::cout << "lru for " << thisCapacity.get()->name << " started" << std::endl;
 
     while (working) {
        
         std::unique_lock<std::mutex> lock(this->lru_struct_mutex);
 
         while (!justAdded && working) {
-            // std::cout << "l1.2.1: " << pthread_self()  << std::endl;
 
             this->new_file_submitted.wait(lock);
         }
@@ -50,16 +48,9 @@ void* LRU::lruThreadWork() {
         if (justAdded) {
             
 
-            // std::cout << "just added signal received" << std::endl;
             while ((current_size) > (total_size - threshold)) {
-            // std::cout << "current size: " << current_size << " total size: " << total_size << " threshold: " << threshold << std::endl;
-            // while (false) {
-
-                // lock.lock();
-                // std::cout << "doing work" << std::endl;
                 full = true;
                 int sst_number = leastAccessedInt();
-                // std::cout << "least accessed: " << sst_number << std::endl;
 
                 if (sst_number != -1) {
 
@@ -114,17 +105,6 @@ void* LRU::lruThreadWork() {
                         std::shared_ptr<Device> device = name_to_device_map[cp_info.dest_tier_name];
 
                         if (device->lru_working) {
-                            // std::cout << "adding to lru after lru" << std::endl;
-
-                    // struct stat stat_buf;
-    
-                    // if (stat(cp_info.dest_path.c_str(), &stat_buf) == 0) {
-                    //     std::cout << "File3 size of " << cp_info.dest_path.c_str() << " is " << stat_buf.st_size << " bytes.\n";
-                    // } else {
-                    //     std::cerr << "Error: Could not get file statistics.\n";
-
-                    // }
-
                             device->lru->add(cp_info.sst_number);
                         }
 
@@ -157,8 +137,6 @@ void* LRU::lruThreadWork() {
                     // lock.unlock();
                 }
 
-                
-                // std::cout << "finished work" << std::endl;
 
             }
             justAdded = false;        
@@ -226,28 +204,7 @@ void LRU::add(int sst_number) {
         0;  // Initialize access count to 0 for new sst_numbers
     updateLeastAccessed(level);
 
-    // std::cout << "lru added file: " << sst_number << " to " << thisCapacity.get()->name << std::endl;
-    // std::cout << "added-size is now " << thisCapacity.get()->name << " : " << current_size << std::endl;
-
-    //print all sst_numbers in the lru (separator is a comma) (all levels)
-    // for (int i = 0; i < 10; i++) {
-    //     std::cout << "level " << i << ": ";
-    //     for (auto it = level_to_sst_accesses[i]->accesses.begin(); it != level_to_sst_accesses[i]->accesses.end(); ++it) {
-    //         std::cout << it->first << ", ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-
-
     justAdded = true;
-
-    //print the file number that was added to the lru and the current size of the lru
-    std::cout << "added file: " << sst_number << " to " << thisCapacity.get()->name << std::endl;
-    std::cout << "size is now " << thisCapacity.get()->name << " : " << current_size << std::endl;
-
-    // pthread_cond_signal(&new_file_cond);
-
-    // pthread_mutex_unlock(&queue_lock);
 
     this->new_file_submitted.notify_all();
 
@@ -276,9 +233,6 @@ void LRU::remove(int sst_number) {
 
     accesses_struct->accesses.erase(sst_number);
     updateLeastAccessed(level);
-
-    // std::cout << "lru removed file: " << sst_number << " to " << thisCapacity.get()->name << std::endl;
-    // std::cout << "-size is now " << thisCapacity.get()->name << " : " << current_size << std::endl;
 
 }
 

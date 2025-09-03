@@ -50,17 +50,6 @@ class PmemFileEnv : public FileEnv {
         mapped_len_ = 0;
         file_offset_ = 0;
 
-        // std::cout << "PmemFileEnv: " << fname << std::endl;
-
-        //get the size of the file
-        // struct stat st;
-        // stat(fname.c_str(), &st);
-        // size_t size = st.st_size;
-        // std::cout << "size of file: " << fname << " is " << size << std::endl;
-
-        
-        // add_sst_file_number_to_string_list_map(sst_number);
-
 
         #ifdef PROFILER_3000
 
@@ -83,19 +72,10 @@ class PmemFileEnv : public FileEnv {
         mapped_len_ = 0;
         file_offset_ = 0;
 
-                //get the size of the file
-        // struct stat st;
-        // stat(fname.c_str(), &st);
-        // size_t size = st.st_size;
-        // std::cout << "size of file: " << fname << " is " << size << std::endl;
-
-        // std::cout << "PmemFileEnv: " << fname << std::endl;
             device = getDevice(sst_number);
-            // std::cout << "pmem: device:" << device->name << " - " << fname_ << std::endl;
             if (!isACachedFile) {
                 if (device->cache != nullptr) {
                     device->cache->add_non_cached_files_access_counter(sst_number, filenode);
-                    // std::cout << "added to cache" << std::endl;
                 }
             }
         
@@ -109,7 +89,6 @@ class PmemFileEnv : public FileEnv {
                 throw std::runtime_error(
                     std::string("pmem_map_file failed1: ").append(fname));
             }
-            // std::cout << "1mapped length for " << fname << " is " << mapped_len_ << std::endl;
 
             assert(is_pmem == true);
 
@@ -129,8 +108,6 @@ class PmemFileEnv : public FileEnv {
 
     ~PmemFileEnv() {
 
-        // std::cout << "destructing pmem file" << std::endl;
-        
         #ifdef PROFILER_3000
         remove_sst_hit(sst_number);
         #endif  // PROFILER_3000
@@ -159,14 +136,6 @@ class PmemFileEnv : public FileEnv {
         pmemaddr_ = (uint8_t *)pmem_map_file(fname_.c_str(), file_offset_ + map_size_,
                                              PMEM_FILE_CREATE, 0644, &mapped_len_, &is_pmem);
 
-        // if(remap) {
-        //     std::cout << "------------------------------" << std::endl;
-        //     std::cout << "MapNewRegion: fname_:" << fname_ << std::endl;
-        //     std::cout << "MapNewRegion: file_offset_: " << file_offset_ << std::endl;
-        //     std::cout << "MapNewRegion: map_size_: " << map_size_ << std::endl;
-        //     std::cout << "MapNewRegion: mapped_len_: " << mapped_len_ << std::endl;
-        // }
-
 
         if (pmemaddr_ == nullptr) {
             std::cout << "pmem_map_file error " << fname_ << std::endl;
@@ -188,7 +157,6 @@ class PmemFileEnv : public FileEnv {
     }
 
     int _open(const char *pathname, int flags) override {
-        // std::cout << "open-pmem1: " << pathname << " | fd is: " << fd << " by " << pthread_self() << std::endl;
 
 
         #ifdef PROFILER_3000
@@ -200,7 +168,6 @@ class PmemFileEnv : public FileEnv {
         }
         #endif  // PROFILER_3000
 
-        // std::cout << "open-pmem1: " << pathname << " | fd is: " << fd << std::endl;
 
         // check if the flag O_CREAT, O_APPEND or O_TRUNC is set
         if (flags & O_CREAT || flags & O_APPEND || flags & O_TRUNC || flags & O_WRONLY || flags & O_RDWR) {
@@ -210,24 +177,12 @@ class PmemFileEnv : public FileEnv {
             MapNewRegion(false);
         } else {
 
-            // filenode = new Node_c(sst_number, 1);
-            // add_sstread_constructor_counter();
-            // int level = get_sst_level(sst_number);
-            // if (level >= 0) {
-            //     device = getDeviceFromLevel(level);
-            //     // std::cout << "device: " << device << std::endl;
-            //     if (device->cache != nullptr) {
-            //         device->cache->add_non_cached_files_access_counter(sst_number, filenode);
-            //         std::cout << "added to cache" << std::endl;
-            //     }
-            // }
+
 
             device = getDevice(sst_number);
-            // std::cout << "pmem: device:" << device->name << " - " << fname_ << std::endl;
             if (!isACachedFile) {
                 if (device->cache != nullptr) {
                     device->cache->add_non_cached_files_access_counter(sst_number, filenode);
-                    // std::cout << "added to cache" << std::endl;
                 }
             }
 
@@ -242,18 +197,12 @@ class PmemFileEnv : public FileEnv {
                 throw std::runtime_error(
                     std::string("pmem_map_file failed1: ").append(pathname));
             }
-            // std::cout << "2mapped length for " << pathname << " is " << mapped_len_ << std::endl;
             assert(is_pmem == true);
         }
         return fd;
     }
 
     int _open(const char *pathname, int flags, mode_t mode) override {
-        // std::cout << "open-pmem2: " << pathname << " | fd is: " << fd << " by " << pthread_self() << std::endl;
-
-        // std::cout << "open-pmem2: " << pathname << " | fd is: " << fd << std::endl;
-
-
 
         #ifdef PROFILER_3000
         device = getDevice(sst_number);
@@ -268,31 +217,14 @@ class PmemFileEnv : public FileEnv {
         // check if the flag O_CREAT, O_APPEND or O_TRUNC is set
         if (flags & O_CREAT || flags & O_APPEND || flags & O_TRUNC || flags & O_WRONLY || flags & O_RDWR) {
             
-            // add_sstwrite_constructor_counter();
-            
             isWritable = true;
             MapNewRegion(false);
         } else {
 
-            // add_sstread_constructor_counter();
-
-            // filenode = new Node_c(sst_number, 1);
-            // int level = get_sst_level(sst_number);
-            // if (level >= 0) {
-            //     device = getDeviceFromLevel(level);
-            //     // std::cout << "device: " << device << std::endl;
-            //     if (device->cache != nullptr) {
-            //         device->cache->add_non_cached_files_access_counter(sst_number, filenode);
-            //         std::cout << "added to cache" << std::endl;
-            //     }
-            // }
-
             device = getDevice(sst_number);
-            // std::cout << "pmem: device:" << device->name << " - " << fname_ << std::endl;
             if (!isACachedFile) {
                 if (device->cache != nullptr) {
                     device->cache->add_non_cached_files_access_counter(sst_number, filenode);
-                    // std::cout << "added to cache" << std::endl;
                 }
             }
 
@@ -308,7 +240,6 @@ class PmemFileEnv : public FileEnv {
                 throw std::runtime_error(
                     std::string("pmem_map_file failed2: ").append(pathname));
             }
-            // std::cout << "3mapped length for " << pathname << " is " << mapped_len_ << std::endl;
 
             assert(is_pmem == true);
         }
@@ -329,20 +260,10 @@ class PmemFileEnv : public FileEnv {
 
         }
 
-        // const size_t unused = mapped_len_ - file_offset_;
-       
-        // add_sstread_destructor_counter();
-
         const size_t unused = mapped_len_ - file_offset_;
-
-        // std::cout << "closing pmem file: " << fname_ << " with real_fd " << fd << std::endl;
-
         pmem_unmap(pmemaddr_, mapped_len_);
 
         if (isWritable) {
-            // add_sstwrite_close_counter();
-
-
             if (unused > 0) {
                 if (truncate(fname_.c_str(), file_offset_) < 0) {
                     std::cout << "Erro while ftruncating pmem mmaped file" << fname_ << std::endl;
@@ -353,13 +274,7 @@ class PmemFileEnv : public FileEnv {
 
         pmemaddr_ = nullptr;
 
-        // closes the real fd
-        // if (!other)
-        //     return close(fd);
-        // return 0;
-
         if (fd > 0) {
-            // std::cout << "closing pmem fd: " << fd << std::endl;
             return close(fd);
         }
     }
@@ -385,13 +300,6 @@ class PmemFileEnv : public FileEnv {
 
         #endif  // PROFILER_3000
 
-        // std::stringstream ss;
-        // std::string currentTime = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());        
-        // ss << "pmem-read: " << sst_number << " | level: " << get_sst_level(sst_number) << " - " <<  " | " << currentTime << std::endl;
-        // print_to_screen(ss.str());
-
-        // add_string_to_sst_file_number_to_string_list_map(sst_number);
-
         if (device != nullptr) {
             if (device->cache != nullptr) {
                 device->cache->storage_access_counter++;
@@ -403,17 +311,12 @@ class PmemFileEnv : public FileEnv {
             }
         }
 
-        // increment_pmem_access_counter();
-
-        // std::cout << "pmem-pread: start: " << offset << " " << count << std::endl;
         const auto len = std::min(mapped_len_ - offset, count);
         std::memcpy(buf, pmemaddr_ + offset, len);
-        // std::cout << "pmem-pread: end: " << offset << " " << count << std::endl;
         return len;
     }
 
     ssize_t _write(int fd, const void *buf, size_t count) override {
-        // add_sstwrite_append_counter();
 
         const char *src = (char *)buf;
         size_t left = count;
@@ -425,7 +328,6 @@ class PmemFileEnv : public FileEnv {
 
             const size_t n = (left <= avail) ? left : avail;
             pmem_memcpy_nodrain(pmemaddr_ + file_offset_, src, n);
-            // pmem_memcpy_persist(base_ + file_offset_, src, n);
             file_offset_ += n;
             src += n;
             left -= n;
@@ -434,14 +336,12 @@ class PmemFileEnv : public FileEnv {
     }
 
     int _fsync(int fd) override {
-        // add_sstwrite_fsync_counter();
 
         pmem_drain();
         return 0;
     }
 
     int _fdatasync(int fd) override {
-        // add_sstwrite_sync_counter();
 
         pmem_drain();
         return 0;
@@ -486,7 +386,6 @@ class PmemFileEnv : public FileEnv {
     }
 
     FILE *_fdopen(int fildes, const char *mode) {
-        // std::cout << "fdopen, fake_fd is " << fildes << " | real fd is " << fd << std::endl;
         FILE * ret = fdopen(fd, mode);
         ret->_fileno = fildes;
         return ret;

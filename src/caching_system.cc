@@ -1,7 +1,3 @@
-//
-// Created by user on 02-06-2023.
-//
-
 #include "caching_system.h"
 
 #include <algorithm>
@@ -23,7 +19,7 @@
 
 #include "cache_node.h"
 
-#include "../../include/myposix.h"
+#include "../../include/keigo.h"
 #include "./tiering/thread_test.h"
 
 #include <dirent.h>
@@ -43,12 +39,8 @@
 
 bool do_copy_to_pmem(const char* srcfile, const char* destfile) {
 
-    // std::cout << "w0" << std::endl;
-
   char buf[4096];
   int cc;
-
-    // std::cout << "w0.5" << std::endl;
 
 
   char *pmemaddr;
@@ -63,13 +55,10 @@ bool do_copy_to_pmem(const char* srcfile, const char* destfile) {
     return false;
   } else {
     struct stat stat;
-      // std::cout << "getting stat for srcfile " << srcfile << std::endl;
     if (fstat(srcfd, &stat) < 0) {
         close(srcfd);
         throw std::runtime_error(std::string("fstat failed"));
     }
-
-    // std::cout << "w1" << std::endl;
 
 
     if ((pmemaddr = (char*)pmem_map_file(destfile, stat.st_size,
@@ -77,49 +66,17 @@ bool do_copy_to_pmem(const char* srcfile, const char* destfile) {
         0666, &mapped_len, &is_pmem)) == NULL) {
       perror("pmem_map_file");
       std::cout << "error: " << std::strerror(errno) << std::endl;
-      //print disk space (/dev/pmem0)
-      // std::cout << "disk space: " << std::endl;
-      // system("df -h /dev/pmem0");
       std::cout << "pmem_error7: " << pmem_errormsg() << std::endl;
-      // std::cout << "LEAVING: pmem_map_file returned null" << std::endl;
-      // exit(1);
     } else {
 
       posix_fadvise(srcfd, 0, stat.st_size, POSIX_FADV_SEQUENTIAL);
 
-      // std::cout << "size is " << stat.st_size << std::endl;
       ssize_t res = readahead(srcfd, 0, stat.st_size);
-      // std::cout << "readahead result: " << res << std::endl;
-
-      // std::cout << "w2" << std::endl;
-
-      // bool on = true;
-      // while (on) {
-
-      //   for (int i = 0; i < 256; i++) {
-      //     if ((cc = read(srcfd, buf, 4096)) > 0) {
-      //       pmem_memcpy_nodrain(pmemaddr, buf, cc);
-      //       // std::cout << "wrote to pmem" << std::endl;
-      //       pmemaddr += cc;
-      //     } else {
-      //       on = false;
-      //       break;
-      //     }
-      //   }
-
-      //   std::this_thread::sleep_for(std::chrono::milliseconds(2));
-
-
-      // }
 
 
       while ((cc = read(srcfd, buf, 4096)) > 0) {
-
-        // std::cout << "writing to pmem" << std::endl;
       
         pmem_memcpy_nodrain(pmemaddr, buf, cc);
-
-        // std::cout << "wrote to pmem" << std::endl;
 
         pmemaddr += cc;
       } 
@@ -129,8 +86,6 @@ bool do_copy_to_pmem(const char* srcfile, const char* destfile) {
         perror("read");
         exit(1);
       }
-
-      // std::cout << "w3" << std::endl;
 
 
       pmem_drain();
@@ -151,7 +106,6 @@ bool do_copy_to_pmem(const char* srcfile, const char* destfile) {
 void DeviceCache::add_non_cached_files_access_counter(int sst_number, Node_c* node) {
     std::unique_lock<std::shared_timed_mutex> lock(
         non_cached_files_access_counter_mutex);
-    // std::cout << "about to insert node in non_cached_files_access_counter_c" << std::endl;
     non_cached_files_access_counter.insertNode_c(node);
 }
 
@@ -166,7 +120,6 @@ void DeviceCache::remove_non_cached_files_access_counter(Node_c* node) {
 void DeviceCache::add_cached_files_access_counter(int sst_number, Node_c* node) {
     std::unique_lock<std::shared_timed_mutex> lock(
         cached_files_access_counter_mutex);
-    // std::cout << "about to insert node in cached_files_access_counter_c" << std::endl;
     cached_files_access_counter.insertNode_c(node);
 }
 
@@ -194,11 +147,6 @@ void DeviceCache::submit_to_cache_actual(Node_c* filenode) {
     // add the file extension
     file_name = file_name + getFileExtension();
 
-    // std::unique_lock<std::shared_timed_mutex> lock1(
-    //     non_cached_files_access_counter_mutex);
-    // std::unique_lock<std::shared_timed_mutex> lock2(
-    //     cached_files_access_counter_mutex);
-
     non_cached_files_access_counter.deleteNode_c(filenode);
 
     filenode->prev = NULL;
@@ -217,8 +165,6 @@ void DeviceCache::submit_to_cache_actual(Node_c* filenode) {
 }
 
 void* DeviceCache::caching_thread() {
-    // //print cache
-    // print_cache_c();
     while (true) {
         {
             std::unique_lock<std::mutex> lock(hitratio_mutex);
@@ -230,9 +176,6 @@ void* DeviceCache::caching_thread() {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         
         if (cache_condition) {
-            // std::this_thread::sleep_for(std::chrono::seconds(1));
-            // sleep for 10 milliseconds
-            // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
             // transverse the non_cached_files_access_counter using the current_ptr
             std::unique_lock<std::shared_timed_mutex> lock1(
@@ -263,7 +206,6 @@ void* DeviceCache::caching_thread() {
 }
 
 void* DeviceCache::check_hitratio() {
-    // std::this_thread::sleep_for(std::chrono::seconds(10));
 
     while (true) {
         {
@@ -272,26 +214,11 @@ void* DeviceCache::check_hitratio() {
                 return NULL;
             }
         }
-        // std::this_thread::sleep_for(std::chrono::seconds(1));
-
-        // if (storageDevice->name == 2) {
-        //     std::cout << "global_posix_counter: " << global_posix_counter << std::endl;
-        //     global_posix_counter = 0;
-        // }
 
         storage_access_counter = 0;
         cache_access_counter = 0;
-        // set_nvme_access_counter(0);
-        // set_pmem_access_counter(0);
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
-
-        // float nvme = get_nvme_access_counter();
-        // float pmem = get_pmem_access_counter();
-        // std::cout << "nvme_counter: " << nvme << std::endl;
-        // std::cout << "pmem_counter: " << pmem << std::endl;
-        // std::cout << "hit ratio1: " << (float)pmem / (float)(nvme+pmem) << std::endl;
-
 
         int storage_access_counter_ = storage_access_counter;
         int cache_access_counter_ = cache_access_counter;
@@ -303,11 +230,8 @@ void* DeviceCache::check_hitratio() {
             std::cout << "storage_access_counter-" << storageDevice->name << ": " << storage_access_counter_ << std::endl;
             std::cout << "cache_access_counter-" << cacheDevice->name << ": " << cache_access_counter_ << std::endl;
 
-            // std::cout << "nvme_counter2: " << nvme_counter << std::endl;
-            // std::cout << "pmem_counter2: " << pmem_counter << std::endl;
         } else {
             std::cout <<  "storage_access_counter-" << storageDevice->name << " + " << "cache_access_counter-" << cacheDevice->name << " = 0" << std::endl;
-            // std::cout << "nvme_counter + pmem_counter = 0" << std::endl;
             
         }
         std::stringstream msg;

@@ -18,7 +18,7 @@
 #include <cstring>
 
 
-// #include "../../include/myposix.h"
+// #include "../../include/keigo.h"
 #include "./tiering/thread_test.h"
 
 std::atomic<int> writer_threads_num(0);
