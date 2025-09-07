@@ -463,12 +463,17 @@ int main() {
 If you use Keigo in your research, please cite our VLDB 2024 paper:
 
 ```bibtex
-@misc{BibEntry2025Sep,
-	title = {{Proceedings of the VLDB Endowment}},
-	year = {2025},
-	month = sep,
-	note = {[Online; accessed 3. Sep. 2025]},
-	url = {https://vldb.org/pvldb/volumes/18/paper/Keigo%3A%20Co-designing%20Log-Structured%20Merge%20Key-Value%20Stores%20with%20a%20Non-Volatile%2C%20Concurrency-aware%20Storage%20Hierarchy}
+@article {Keigo:2025:Adao,
+	title 		= {{KEIGO: Co-Designing Log-Structured Merge Key-Value Stores with a Non-Volatile, Concurrency-Aware Storage Hierarchy}},
+	author 		= {Ad\~{a}o, R\'{u}ben and Wu, Zhongjie and Zhou, Changjun and Balmau, Oana and Paulo, Jo\~{a}o and Macedo, Ricardo},
+	journal	 	= {{Proceedings of the VLDB Endowment}},
+	year 		= {2025},
+	issue_date 	= {May 2025},
+	publisher 	= {VLDB Endowment},
+	volume 		= {18},
+	number 		= {9},
+	pages 		= {2872–2885},
+	doi 		= {10.14778/3746405.3746414},
 }
 ```
 
