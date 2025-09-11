@@ -7,6 +7,25 @@
 
 Keigo is a high-performance, POSIX-compatible wrapper library designed for key-value storage systems with multi-tier storage architectures. Originally designed for LSM-tree based storage engines like RocksDB, Keigo provides intelligent file placement, automated caching, and advanced file lifecycle management across heterogeneous storage tiers including persistent memory (PMEM), SSDs, and traditional HDDs.
 
+
+Please cite our VLDB 2025 paper if you use Keigo:
+
+```bibtex
+@article {Keigo:2025:Adao,
+	title 		= {{KEIGO: Co-Designing Log-Structured Merge Key-Value Stores with a Non-Volatile, Concurrency-Aware Storage Hierarchy}},
+	author 		= {Ad\~{a}o, R\'{u}ben and Wu, Zhongjie and Zhou, Changjun and Balmau, Oana and Paulo, Jo\~{a}o and Macedo, Ricardo},
+	journal	 	= {{Proceedings of the VLDB Endowment}},
+	year 		= {2025},
+	issue_date 	= {May 2025},
+	publisher 	= {VLDB Endowment},
+	volume 		= {18},
+	number 		= {9},
+	pages 		= {2872–2885},
+	doi 		= {10.14778/3746405.3746414},
+}
+```
+
+
 ## Table of Contents
 
 - [Overview](#overview)
@@ -454,26 +473,6 @@ int main() {
     // Cleanup
     end_tiering_lib();
     return 0;
-}
-```
-
-
-## Citation
-
-If you use Keigo in your research, please cite our VLDB 2024 paper:
-
-```bibtex
-@article {Keigo:2025:Adao,
-	title 		= {{KEIGO: Co-Designing Log-Structured Merge Key-Value Stores with a Non-Volatile, Concurrency-Aware Storage Hierarchy}},
-	author 		= {Ad\~{a}o, R\'{u}ben and Wu, Zhongjie and Zhou, Changjun and Balmau, Oana and Paulo, Jo\~{a}o and Macedo, Ricardo},
-	journal	 	= {{Proceedings of the VLDB Endowment}},
-	year 		= {2025},
-	issue_date 	= {May 2025},
-	publisher 	= {VLDB Endowment},
-	volume 		= {18},
-	number 		= {9},
-	pages 		= {2872–2885},
-	doi 		= {10.14778/3746405.3746414},
 }
 ```
 
