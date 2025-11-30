@@ -10,3 +10,7 @@
 	path = yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp
 	branch = yaml-cpp-0.7.0
+[submodule "tiered-rocksdb"]
+	path = tiered-rocksdb
+	url = git@github.com:dsrhaslab/tiered-rocksdb.git
+	branch = rub/vlldb

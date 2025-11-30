@@ -30,13 +30,13 @@ Please cite our VLDB 2025 paper if you use Keigo:
 
 - [Overview](#overview)
 - [Key Features](#key-features)
-- [Architecture](#architecture)
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Integration Guide](#integration-guide)
 - [API Reference](#api-reference)
 - [Performance Optimizations](#performance-optimizations)
 - [Examples](#examples)
+- [RocksDB Integration](#rocksdb-integration)
 
 ## Overview
 
@@ -71,73 +71,6 @@ Keigo addresses the challenges of managing data across multiple storage tiers in
 - **Compaction Awareness**: Understands LSM-tree compaction semantics
 - **Background Processing**: Non-blocking file migration and management
 - **Trivial Move Optimization**: Efficient handling of file-level moves
-
-## Architecture
-
-```mermaid
-graph TB
-    subgraph "Application Layer"
-        KVS[Key-Value Store]
-    end
-    
-    subgraph "Keigo Library"
-        API[POSIX API Layer]
-        CTX[Context Manager]
-        FE[File Environment Router]
-        TM[Tier Manager]
-        CM[Cache Manager]
-        RM[Recycling Manager]
-    end
-    
-    subgraph "File Environments"
-        PMEM_ENV[PMEM Environment]
-        POSIX_ENV[POSIX Environment]
-        WAL_ENV[WAL Environment]
-        SST_ENV[SST Environment]
-    end
-    
-    subgraph "Storage Tiers"
-        TIER1[Tier 1: PMEM<br/>Performance Tier]
-        TIER2[Tier 2: NVMe SSD<br/>Capacity Tier]
-        TIER3[Tier 3: SATA SSD<br/>Capacity Tier]
-    end
-    
-    KVS --> API
-    API --> CTX
-    CTX --> FE
-    FE --> TM
-    FE --> CM
-    FE --> RM
-    FE --> PMEM_ENV
-    FE --> POSIX_ENV
-    FE --> WAL_ENV
-    FE --> SST_ENV
-    
-    PMEM_ENV --> TIER1
-    POSIX_ENV --> TIER2
-    POSIX_ENV --> TIER3
-    WAL_ENV --> TIER1
-    SST_ENV --> TIER1
-    SST_ENV --> TIER2
-```
-
-### Core Components
-
-#### **File Environment System**
-- **PosixFileEnv**: Standard POSIX file operations with tier awareness
-- **PmemFileEnv**: Persistent memory optimized operations using PMDK
-- **WalFileEnv**: Specialized environment for write-ahead log files
-- **SstWriteFileEnv**: Optimized environment for SST file writes
-
-#### **Tier Management**
-- **Device Abstraction**: Unified interface for different storage types
-- **Policy Engine**: YAML-configurable placement policies
-- **LRU Management**: Automatic eviction when tiers reach capacity
-
-#### **Caching System**
-- **Multi-Level Caching**: Separate caches for each storage tier
-- **Access Tracking**: Monitors file access patterns for intelligent caching
-- **Hit Ratio Optimization**: Dynamically adjusts cache policies
 
 ## Installation
 
@@ -475,4 +408,21 @@ int main() {
     return 0;
 }
 ```
+
+## RocksDB Integration
+
+We provide a version of RocksDB that is already integrated with Keigo as a submodule (`tiered-rocksdb`).
+
+### Building RocksDB with Keigo
+
+```bash
+# Clone keigo with all submodules
+git clone --recurse-submodules https://github.com/dsrhaslab/keigo.git
+cd keigo
+
+# Build RocksDB
+./build.sh build-rocksdb
+```
+
+The RocksDB build will be available in `tiered-rocksdb/build/`.
 

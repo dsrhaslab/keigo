@@ -3,11 +3,13 @@ PROJECT_BUILD_DIR="${PROJECT_SOURCE_DIR}/build"
 PMDK_DIR="${PROJECT_SOURCE_DIR}/pmdk"
 TBB_DIR="${PROJECT_SOURCE_DIR}/oneTBB"
 YAML_DIR="${PROJECT_SOURCE_DIR}/yaml-cpp"
+ROCKSDB_DIR="${PROJECT_SOURCE_DIR}/tiered-rocksdb"
 
 BUILT_DEPS="${PROJECT_SOURCE_DIR}/.build_deps"
 BUILT_PMDK="${BUILT_DEPS}/.built_pmdk"
 BUILT_TBB="${BUILT_DEPS}/.built_tbb"
 BUILT_YAML="${BUILT_DEPS}/.built_yaml"
+BUILT_ROCKSDB="${BUILT_DEPS}/.built_rocksdb"
 
 
 function build-tbb {
@@ -47,6 +49,16 @@ function build-keigo {
   cmake --build $PROJECT_BUILD_DIR -- -j $(nproc)
   # make
   sudo make install
+}
+
+function build-rocksdb {
+  echo "=== build-rocksdb ==="
+  ROCKSDB_BUILD_DIR="${ROCKSDB_DIR}/build"
+  mkdir -p ${ROCKSDB_BUILD_DIR}
+  # cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_RTTI=true -B ${ROCKSDB_BUILD_DIR} -S ${ROCKSDB_DIR}
+  cmake -DCMAKE_BUILD_TYPE=Release -DUSE_RTTI=true -B ${ROCKSDB_BUILD_DIR} -S ${ROCKSDB_DIR}
+
+  cmake --build ${ROCKSDB_BUILD_DIR} -- -j $(nproc)
 }
 
 
